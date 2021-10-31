@@ -1,0 +1,71 @@
+buildscript {
+    ext.pendler_main_version = '2.3.2-SNAPSHOT'
+    ext.kotlin_version = '1.5.31'
+    ext.dfaenv_version = pendler_main_version
+
+    repositories {
+        mavenLocal()
+        if(project.hasProperty('PendlerExecutor')) {
+            maven {
+                url "${project.property("host")}/static/maven/private-repository/3e6e12b1-1532-4f24-a916-adb146685f2a"
+            }
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        /**
+         * Use Meta documentation
+         */
+        classpath "org.dongoteam:metadoc-gradle-plugin:$pendler_main_version"
+
+    }
+}
+
+group 'org.dongoteam.linden.example.todoapp'
+version '1.0.0-SNAPSHOT'
+
+apply plugin: 'kotlin'
+apply plugin: 'metadoc'
+
+sourceCompatibility = 1.8
+
+repositories {
+  mavenLocal()
+  if(project.hasProperty('PendlerExecutor')) {
+    maven {
+      url "${project.property("host")}/static/maven/private-repository/3e6e12b1-1532-4f24-a916-adb146685f2a"
+    }
+  }
+  mavenCentral()
+  jcenter()
+}
+
+dependencies {
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+  testCompile group: 'junit', name: 'junit', version: '4.12'
+  testCompile "org.dongoteam.pendler.dfa:dfa-environment:$dfaenv_version"
+}
+
+compileKotlin {
+  kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+  kotlinOptions.jvmTarget = "1.8"
+}
+
+task testDFAall(type: JavaExec) {
+  main = "org.dongoteam.pendler.envs.dfa.console.StartConsoleKt"
+  args = ["all", "parameter:url=http://localhost:8000"]
+  classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+}
+
+task stub(type: JavaExec) {
+  main = 'org.dongoteam.pendler.envs.dfa.stub.StubKt'
+  args = [
+    project.hasProperty('host') ? project.property("host") : "",
+    project.hasProperty('auth') ? project.property("auth") : ""
+  ]
+  //args = [(project.hasProperty('stub') ? project.stub : 'fail-url|fail-auth').split('\\|')]
+  classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+}
