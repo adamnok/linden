@@ -6,4 +6,4 @@ Supported Scala version:
   - 3.1.0
   
 Supported environment/renderer:
-  -  Browser woth ScalaJS
+  -  Browser with ScalaJS
